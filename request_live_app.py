@@ -14,7 +14,7 @@ label = test_data['salary']
 
 test_data.drop('salary')
 
-response = requests.post('https://udacity-census-inference-app.herokuapp.com/model_inference',
+response = requests.post('https://udacity-cencus.herokuapp.com/model_inference',
                          data=json.dumps(test_data.to_dict()))
 
 print(f"Status Code: {response.status_code}")
