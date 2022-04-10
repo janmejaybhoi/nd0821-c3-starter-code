@@ -1,28 +1,37 @@
 # Script to train machine learning model.
 
 from sklearn.model_selection import train_test_split
+from ml.data import load_data, save_data, process_data
+from ml.model import save_model, train_model
 
-# Add the necessary imports for the starter code.
+import os
+import yaml
 
-# Add code to load in the data.
+root_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
-# Optional enhancement, use K-fold cross validation instead of a train-test split.
-train, test = train_test_split(data, test_size=0.20)
+# Load data
+data = load_data(root_path, "clean_census.csv")
 
-cat_features = [
-    "workclass",
-    "education",
-    "marital-status",
-    "occupation",
-    "relationship",
-    "race",
-    "sex",
-    "native-country",
-]
-X_train, y_train, encoder, lb = process_data(
-    train, categorical_features=cat_features, label="salary", training=True
+# Read categorical_features
+with open(os.path.join(root_path, "starter", "constants.yaml"), 'r') as f:
+    categorical_features = yaml.safe_load(f)["categorical_features"]
+
+# Split data
+train_data, test_data = train_test_split(data, test_size=0.20)
+
+# Save data
+save_data(train_data, root_path, "train_census.csv")
+save_data(test_data, root_path, "test_census.csv")
+
+# Process training data
+X_train, y_train, preprocessor, label_binarizer = process_data(
+    train_data, categorical_features=categorical_features, label="salary", training=True
 )
 
-# Proces the test data with the process_data function.
+# Train model
+model = train_model(X_train, y_train)
 
-# Train and save a model.
+# Save model along with preprocessor and label_binarizer
+save_model(model, root_path, "model.pkl")
+save_model(preprocessor, root_path, "preprocessor.pkl")
+save_model(label_binarizer, root_path, "label_binarizer.pkl")
